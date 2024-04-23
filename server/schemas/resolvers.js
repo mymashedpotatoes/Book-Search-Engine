@@ -1,10 +1,14 @@
-const { User, Book } = require('../models');
+const { User } = require('../models');
 const { signToken, AuthenticationError } = require('../utils/auth');
 
 const resolvers = {
   Query: {
-    me: async (parent, { username }) => {
-      return User.findOne({ username }).populate('books');
+    // returns data of currently auth'd user
+    me: async (parent, args, context) => {
+      if (context.user) {
+        return User.findOne({ _id: context.user._id });
+      }
+      throw AuthenticationError;
     },
   },
 
@@ -14,6 +18,7 @@ const resolvers = {
       const token = signToken(user);
       return { token, user };
     },
+    
     login: async (parent, { email, password }) => {
       const user = await User.findOne({ email });
 
@@ -31,37 +36,29 @@ const resolvers = {
 
       return { token, user };
     },
-    saveBook: async (parent, { bookText }, context) => {
+
+    // adds book to auth'd users savedBooks
+    saveBook: async (parent, { input }, context) => {
       if (context.user) {
-        const book = await Book.create({
-          bookText,
-          bookAuthor: context.user.username,
-        });
-
-        await User.findOneAndUpdate(
+        const updatedUser = await User.findOneAndUpdate(
           { _id: context.user._id },
-          { $addToSet: { books: book._id } },
-          { new: true, runValidators: true }
-        );
-
-        return book;
+          { $addToSet: { savedBooks: input } },
+          { new: true }
+        )
+        return updatedUser;
       }
       throw AuthenticationError;
     },
+
+    // removes book from auth'd users savedBooks
     removeBook: async (parent, { bookId }, context) => {
       if (context.user) {
-        const book = await Book.findOneAndDelete({
-          _id: bookId,
-          bookAuthor: context.user.username,
-        });
-
-        await User.findOneAndUpdate(
+        const updatedUser = await User.findOneAndUpdate(
           { _id: context.user._id },
-          { $pull: { books: book._id } },
+          { $pull: { savedBooks: { bookId: bookId } } },
           { new: true }
-        );
-
-        return book;
+        )
+        return updatedUser;
       }
       throw AuthenticationError;
     },
