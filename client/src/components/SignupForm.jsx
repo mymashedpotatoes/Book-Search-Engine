@@ -24,20 +24,23 @@ const SignupForm = () => {
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
-    // check if form has everything (as per react-bootstrap docs)
+    // check if form has all components
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
       event.preventDefault();
       event.stopPropagation();
     }
 
+    // send the data from the form to the addUser and then login if contains all correct info
     try {
+      console.log("Submitting form with data:", userFormData);
       const { data } = await addUser({
         variables: { ...userFormData },
       });
+      console.log("Received data:", data);
       Auth.login(data.addUser.token);
     } catch (err) {
-      console.error(err);
+      console.error("Error submitting form:", err);
       setShowAlert(true);
     }
 

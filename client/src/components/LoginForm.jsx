@@ -29,6 +29,7 @@ const LoginForm = () => {
       event.stopPropagation();
     }
 
+    // check if user form has all data and if it does, login user
     try {
       const { data } = await login({
         variables: { ...userFormData },
