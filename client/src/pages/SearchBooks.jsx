@@ -9,7 +9,7 @@ import {
 } from 'react-bootstrap';
 
 import Auth from '../utils/auth';
-import { saveBook, searchGoogleBooks } from '../utils/API';
+// import { saveBook, searchGoogleBooks } from '../utils/API';
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
 import { useMutation } from '@apollo/client';
 import { SAVE_BOOK } from '../utils/mutations';
@@ -41,8 +41,8 @@ const SearchBooks = () => {
     }
 
     try {
-      const response = await `https://www.googleapis.com/books/v1/volumes?q=${searchInput}`;
-
+      // set up search from google books api
+      const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${searchInput}`);
       if (!response.ok) {
         throw new Error('something went wrong!');
       }
