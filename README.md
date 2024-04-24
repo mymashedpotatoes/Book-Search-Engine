@@ -3,7 +3,7 @@
 
 ## Description
 
-This application serves as a book search, where a user can create an account and keep track of books they want to read, or books they have read.
+This application serves as a book search, where a user can create an account and keep track of books they want to read, or books they have read. Before this app used Google Books API search engine built with a RESTful API to run but now is refactored to be a GraphQL API built with Apollo Server.
 
 
 ## Table of Contents
